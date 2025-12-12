@@ -1,0 +1,14 @@
+{
+  "provisioners": [
+    {
+      "type": "shell",
+      "environment_vars": [
+        "ARCH=amd64"
+      ],
+      "scripts": [
+        "./packer/hcloud/scripts/additional-tools.sh",
+        "./packer/hcloud/scripts/cri.sh"
+      ]
+    }
+  ]
+}

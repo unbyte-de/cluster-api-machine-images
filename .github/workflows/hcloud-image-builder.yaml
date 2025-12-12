@@ -1,0 +1,58 @@
+name: Build hcloud node image
+
+on:
+  # pull_request:
+  #   paths:
+  #     - "customisation/**"
+  workflow_dispatch:
+    inputs:
+      HCLOUD_PROJECT:
+        description: "Hetzner project (must match a GitHub Environment name)"
+        required: true
+        type: choice
+        options:
+          - unbyte-dev
+          - pbm-dev
+
+jobs:
+  build:
+    name: Build image (${{ inputs.HCLOUD_PROJECT }})
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.HCLOUD_PROJECT }}
+    # environment: ${{ github.event_name == 'workflow_dispatch' && inputs.HCLOUD_PROJECT || 'unbyte-dev' }}
+    env:
+      HCLOUD_LOCATION: fsn1
+      HCLOUD_PROJECT: ${{ inputs.HCLOUD_PROJECT }}
+      # HCLOUD_PROJECT: ${{ github.event_name == 'workflow_dispatch' && inputs.HCLOUD_PROJECT || 'unbyte-dev' }}
+      # comes from the selected Environment's secrets
+      HCLOUD_TOKEN: ${{ secrets.HCLOUD_TOKEN }}
+      PACKER_VAR_FILES: /github/workspace/customisation/vars/k8s-1.31.json
+    container:
+      # TODO renovate
+      image: registry.k8s.io/scl-image-builder/cluster-node-image-builder-amd64:v0.1.48@sha256:4a522321b30c855efeeb6503f663046aca5c12f14edeb41ee7ef3ae617e3597a
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build
+        shell: sh
+        run: |
+          set -euo pipefail
+
+          echo "Copy scripts..."
+          mkdir -p /home/imagebuilder/packer/hcloud/scripts
+          ls -lah /home/imagebuilder/packer/hcloud/scripts
+          cp -r /github/workspace/customisation/scripts/* /home/imagebuilder/packer/hcloud/scripts/
+
+          echo "Patch..."
+          pwd
+          jq --slurpfile patch /github/workspace/customisation/packer-patch.json \
+            '.provisioners += $patch[0].provisioners' \
+            /home/imagebuilder/packer/hcloud/packer.json > /tmp/packer.json
+          mv /tmp/packer.json /home/imagebuilder/packer/hcloud/packer.json
+
+          echo "Validate..."
+          /usr/bin/make -C /home/imagebuilder validate-hcloud-ubuntu-2204
+
+          echo "Build..."
+          /usr/bin/make -C /home/imagebuilder build-hcloud-ubuntu-2404
