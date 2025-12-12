@@ -40,19 +40,26 @@ jobs:
         run: |
           set -euo pipefail
 
-          export PACKER_VAR_FILES=$GITHUB_WORKSPACE/$PACKER_VAR_FILES
-          echo $PACKER_VAR_FILES
-          echo $HOME
-          id
-          # env
+          # Build must run as the imagebuilder user
+          su -s /bin/bash - imagebuilder <<'EOF'
+          set -euo pipefail
+
+          echo "whoami=$(whoami) home=$HOME"
+          echo "GITHUB_WORKSPACE=$GITHUB_WORKSPACE"
+
+          # Make PACKER_VAR_FILES absolute for the make targets
+          export PACKER_VAR_FILES="$GITHUB_WORKSPACE/$PACKER_VAR_FILES"
+          echo "PACKER_VAR_FILES=$PACKER_VAR_FILES"
 
           echo "Copy scripts..."
           mkdir -p /home/imagebuilder/packer/hcloud/scripts
-          cp -r $GITHUB_WORKSPACE/customisation/scripts/* /home/imagebuilder/packer/hcloud/scripts/
-          ls -lah /home/imagebuilder/packer/hcloud/scripts
+          if [ -d "$GITHUB_WORKSPACE/customisation/scripts" ]; then
+            cp -a "$GITHUB_WORKSPACE/customisation/scripts/." /home/imagebuilder/packer/hcloud/scripts/
+          fi
+          ls -lah /home/imagebuilder/packer/hcloud/scripts/
 
           echo "Patch..."
-          jq --slurpfile patch $GITHUB_WORKSPACE/customisation/packer-patch.json \
+          jq --slurpfile patch "$GITHUB_WORKSPACE/customisation/packer-patch.json" \
             '.provisioners += $patch[0].provisioners' \
             /home/imagebuilder/packer/hcloud/packer.json > /tmp/packer.json
           mv /tmp/packer.json /home/imagebuilder/packer/hcloud/packer.json
@@ -62,3 +69,4 @@ jobs:
 
           echo "Build..."
           /usr/bin/make -C /home/imagebuilder build-hcloud-ubuntu-2404
+          EOF
