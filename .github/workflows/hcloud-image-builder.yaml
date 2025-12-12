@@ -30,6 +30,7 @@ jobs:
     container:
       # TODO renovate
       image: registry.k8s.io/scl-image-builder/cluster-node-image-builder-amd64:v0.1.48@sha256:4a522321b30c855efeeb6503f663046aca5c12f14edeb41ee7ef3ae617e3597a
+      options: --user 0:0
     steps:
       - name: Checkout
         uses: actions/checkout@v4
