@@ -40,15 +40,16 @@ jobs:
         run: |
           set -euo pipefail
 
-          ls -lah
-          echo $GITHUB_WORKSPACE
+          echo $PACKER_VAR_FILES
+          echo $HOME
+          env
+
           echo "Copy scripts..."
           mkdir -p /home/imagebuilder/packer/hcloud/scripts
-          ls -lah /home/imagebuilder/packer/hcloud/scripts
           cp -r $GITHUB_WORKSPACE/customisation/scripts/* /home/imagebuilder/packer/hcloud/scripts/
+          ls -lah /home/imagebuilder/packer/hcloud/scripts
 
           echo "Patch..."
-          pwd
           jq --slurpfile patch $GITHUB_WORKSPACE/customisation/packer-patch.json \
             '.provisioners += $patch[0].provisioners' \
             /home/imagebuilder/packer/hcloud/packer.json > /tmp/packer.json
