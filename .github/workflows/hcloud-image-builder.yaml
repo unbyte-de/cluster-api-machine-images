@@ -40,9 +40,11 @@ jobs:
         run: |
           set -euo pipefail
 
+          export GITHUB_WORKSPACE="${GITHUB_WORKSPACE:?}"
           # Build must run as the imagebuilder user
           su -s /bin/bash - imagebuilder <<'EOF'
           set -euo pipefail
+          env
 
           echo "whoami=$(whoami) home=$HOME"
           echo "GITHUB_WORKSPACE=$GITHUB_WORKSPACE"
