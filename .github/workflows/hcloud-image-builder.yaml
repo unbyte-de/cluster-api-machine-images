@@ -13,6 +13,12 @@ on:
         options:
           - unbyte-dev
           - pbm-dev
+      OS:
+        description: "OS"
+        required: true
+        type: choice
+        options:
+          - ubuntu-2404
 
 jobs:
   build:
@@ -26,11 +32,12 @@ jobs:
       # HCLOUD_PROJECT: ${{ github.event_name == 'workflow_dispatch' && inputs.HCLOUD_PROJECT || 'unbyte-dev' }}
       # comes from the selected Environment's secrets
       HCLOUD_TOKEN: ${{ secrets.HCLOUD_TOKEN }}
-      PACKER_VAR_FILES: customisation/vars/k8s-1.31.json
-    container:
+      OS_INFO: ${{ inputs.OS }}
+      # PACKER_VAR_FILES: customisation/vars/k8s-1.31.json
+      PACKER_VAR_FILES: /tmp/k8s-1.31.json
       # TODO renovate
-      image: registry.k8s.io/scl-image-builder/cluster-node-image-builder-amd64:v0.1.48@sha256:4a522321b30c855efeeb6503f663046aca5c12f14edeb41ee7ef3ae617e3597a
-      options: --user 0:0
+      IMAGE_BUILDER: >
+        registry.k8s.io/scl-image-builder/cluster-node-image-builder-amd64:v0.1.48@sha256:4a522321b30c855efeeb6503f663046aca5c12f14edeb41ee7ef3ae617e3597a
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -40,35 +47,25 @@ jobs:
         run: |
           set -euo pipefail
 
-          export GITHUB_WORKSPACE="${GITHUB_WORKSPACE:?}"
-          # Build must run as the imagebuilder user
-          su -s /bin/bash - imagebuilder <<'EOF'
-          set -euo pipefail
-          env
+          # sanity checks
+          test -f customisation/packer-patch.json
+          test -f customisation/vars/k8s-1.31.json
 
-          echo "whoami=$(whoami) home=$HOME"
-          echo "GITHUB_WORKSPACE=$GITHUB_WORKSPACE"
-
-          # Make PACKER_VAR_FILES absolute for the make targets
-          export PACKER_VAR_FILES="$GITHUB_WORKSPACE/$PACKER_VAR_FILES"
-          echo "PACKER_VAR_FILES=$PACKER_VAR_FILES"
-
-          echo "Copy scripts..."
-          mkdir -p /home/imagebuilder/packer/hcloud/scripts
-          if [ -d "$GITHUB_WORKSPACE/customisation/scripts" ]; then
-            cp -a "$GITHUB_WORKSPACE/customisation/scripts/." /home/imagebuilder/packer/hcloud/scripts/
-          fi
-          ls -lah /home/imagebuilder/packer/hcloud/scripts/
-
-          echo "Patch..."
-          jq --slurpfile patch "$GITHUB_WORKSPACE/customisation/packer-patch.json" \
-            '.provisioners += $patch[0].provisioners' \
-            /home/imagebuilder/packer/hcloud/packer.json > /tmp/packer.json
-          mv /tmp/packer.json /home/imagebuilder/packer/hcloud/packer.json
-
-          echo "Validate..."
-          /usr/bin/make -C /home/imagebuilder validate-hcloud-ubuntu-2204
-
-          echo "Build..."
-          /usr/bin/make -C /home/imagebuilder build-hcloud-ubuntu-2404
-          EOF
+          docker run --rm \
+            --env HCLOUD_LOCATION \
+            --env HCLOUD_TOKEN \
+            --env PACKER_VAR_FILES \
+            --env OS_INFO \
+            -v "${PWD}/customisation/scripts:/home/imagebuilder/packer/hcloud/scripts" \
+            -v "${PWD}/customisation/packer-patch.json:/tmp/packer-patch.json" \
+            -v "${PWD}/customisation/vars/k8s-1.31.json:${PACKER_VAR_FILES}" \
+            --entrypoint /bin/sh \
+            "${IMAGE_BUILDER}" \
+            -c 'set -e
+                echo "Patch..." &&
+                jq --slurpfile patch /tmp/packer-patch.json \
+                  ".provisioners += \$patch[0].provisioners" \
+                  packer/hcloud/packer.json > /tmp/packer.json && \
+                mv /tmp/packer.json packer/hcloud/packer.json && \
+                echo "Validate..." && /usr/bin/make validate-hcloud-$OS_INFO && \
+                echo "Build..." && /usr/bin/make build-hcloud-$OS_INFO'
