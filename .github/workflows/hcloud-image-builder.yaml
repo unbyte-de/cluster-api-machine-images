@@ -40,6 +40,9 @@ jobs:
         run: |
           set -euo pipefail
 
+          ls -lah /github/workspace/
+          ls -lah /github/workspace/customisation
+          ls -lah /github/workspace/customisation/scripts
           echo "Copy scripts..."
           mkdir -p /home/imagebuilder/packer/hcloud/scripts
           ls -lah /home/imagebuilder/packer/hcloud/scripts
