@@ -40,6 +40,8 @@ jobs:
         run: |
           set -euo pipefail
 
+          pwd
+          echo $GITHUB_WORKSPACE
           ls -lah /github/workspace/
           ls -lah /github/workspace/customisation
           ls -lah /github/workspace/customisation/scripts
