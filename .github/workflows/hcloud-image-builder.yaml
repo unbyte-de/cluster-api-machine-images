@@ -36,7 +36,7 @@ jobs:
       # PACKER_VAR_FILES: customisation/vars/k8s-1.31.json
       PACKER_VAR_FILES: /tmp/k8s-1.31.json
       # TODO renovate
-      IMAGE_BUILDER: >
+      IMAGE_BUILDER: >-
         registry.k8s.io/scl-image-builder/cluster-node-image-builder-amd64:v0.1.48@sha256:4a522321b30c855efeeb6503f663046aca5c12f14edeb41ee7ef3ae617e3597a
     steps:
       - name: Checkout
@@ -52,10 +52,10 @@ jobs:
           test -f customisation/vars/k8s-1.31.json
 
           docker run --rm \
-            --env HCLOUD_LOCATION \
-            --env HCLOUD_TOKEN \
-            --env PACKER_VAR_FILES \
-            --env OS_INFO \
+            --env HCLOUD_LOCATION=$HCLOUD_LOCATION \
+            --env HCLOUD_TOKEN=$HCLOUD_TOKEN \
+            --env PACKER_VAR_FILES=$PACKER_VAR_FILES \
+            --env OS_INFO=$OS_INFO \
             -v "${PWD}/customisation/scripts:/home/imagebuilder/packer/hcloud/scripts" \
             -v "${PWD}/customisation/packer-patch.json:/tmp/packer-patch.json" \
             -v "${PWD}/customisation/vars/k8s-1.31.json:${PACKER_VAR_FILES}" \
