@@ -12,7 +12,10 @@ on:
         type: choice
         options:
           - unbyte-dev
+          - unbyte-mgt
           - pbm-dev
+          - pbm-stage
+          - pbm-prod
       OS:
         description: "OS"
         required: true
