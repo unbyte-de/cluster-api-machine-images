@@ -3,11 +3,13 @@
     {
       "type": "shell",
       "environment_vars": [
-        "ARCH=amd64"
+        "ARCH=amd64",
+        "CONTAINER_REGISTRY_URL={{user `container_registry_url`}}"
       ],
       "scripts": [
         "./packer/hcloud/scripts/additional-tools.sh",
-        "./packer/hcloud/scripts/cri.sh"
+        "./packer/hcloud/scripts/cri.sh",
+        "./packer/hcloud/scripts/validate.sh"
       ]
     }
   ]

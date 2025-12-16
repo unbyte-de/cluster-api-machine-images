@@ -3,7 +3,7 @@ name: Build hcloud node image
 on:
   # pull_request:
   #   paths:
-  #     - "customisation/**"
+  #     - "config/**"
   workflow_dispatch:
     inputs:
       HCLOUD_PROJECT:
@@ -28,19 +28,18 @@ jobs:
     # environment: ${{ github.event_name == 'workflow_dispatch' && inputs.HCLOUD_PROJECT || 'unbyte-dev' }}
     env:
       HCLOUD_LOCATION: fsn1
-      HCLOUD_PROJECT: ${{ inputs.HCLOUD_PROJECT }}
-      # HCLOUD_PROJECT: ${{ github.event_name == 'workflow_dispatch' && inputs.HCLOUD_PROJECT || 'unbyte-dev' }}
-      # comes from the selected Environment's secrets
+      # Comes from the selected Environment's secrets
       HCLOUD_TOKEN: ${{ secrets.HCLOUD_TOKEN }}
+      CONTAINER_REGISTRY_URL: ${{ secrets.CONTAINER_REGISTRY_URL }}
       OS_INFO: ${{ inputs.OS }}
-      # PACKER_VAR_FILES: customisation/vars/k8s-1.31.json
       PACKER_VAR_FILES: /tmp/k8s-1.31.json
       # TODO renovate
       IMAGE_BUILDER: >-
         registry.k8s.io/scl-image-builder/cluster-node-image-builder-amd64:v0.1.48@sha256:4a522321b30c855efeeb6503f663046aca5c12f14edeb41ee7ef3ae617e3597a
     steps:
+      # https://github.com/actions/checkout
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6.1.0
 
       - name: Build
         shell: bash
@@ -48,17 +47,20 @@ jobs:
           set -euo pipefail
 
           # sanity checks
-          test -f customisation/packer-patch.json
-          test -f customisation/vars/k8s-1.31.json
+          test -f config/packer-patch.json
+          test -f config/vars/k8s-1.31.json
+          # scripts dir must exist and contain at least one file
+          test -d config/scripts
+          test -n "$(find config/scripts -maxdepth 1 -type f -print -quit)"
 
           docker run --rm \
-            --env HCLOUD_LOCATION=$HCLOUD_LOCATION \
-            --env HCLOUD_TOKEN=$HCLOUD_TOKEN \
-            --env PACKER_VAR_FILES=$PACKER_VAR_FILES \
-            --env OS_INFO=$OS_INFO \
-            -v "${PWD}/customisation/scripts:/home/imagebuilder/packer/hcloud/scripts" \
-            -v "${PWD}/customisation/packer-patch.json:/tmp/packer-patch.json" \
-            -v "${PWD}/customisation/vars/k8s-1.31.json:${PACKER_VAR_FILES}" \
+            --env HCLOUD_LOCATION=${HCLOUD_LOCATION} \
+            --env HCLOUD_TOKEN=${HCLOUD_TOKEN} \
+            --env PACKER_VAR_FILES=${PACKER_VAR_FILES} \
+            --env OS_INFO=${OS_INFO} \
+            -v "${PWD}/config/scripts:/home/imagebuilder/packer/hcloud/scripts" \
+            -v "${PWD}/config/packer-patch.json:/tmp/packer-patch.json" \
+            -v "${PWD}/config/vars/k8s-1.31.json:${PACKER_VAR_FILES}" \
             --entrypoint /bin/sh \
             "${IMAGE_BUILDER}" \
             -c 'set -e
@@ -67,5 +69,6 @@ jobs:
                   ".provisioners += \$patch[0].provisioners" \
                   packer/hcloud/packer.json > /tmp/packer.json && \
                 mv /tmp/packer.json packer/hcloud/packer.json && \
-                echo "Validate..." && /usr/bin/make validate-hcloud-$OS_INFO && \
-                echo "Build..." && /usr/bin/make build-hcloud-$OS_INFO'
+                export PACKER_FLAGS="-var container_registry_url='"${CONTAINER_REGISTRY_URL}"'" && \
+                echo "Validate..." && /usr/bin/make "validate-hcloud-${OS_INFO}" && \
+                echo "Build..." && /usr/bin/make "build-hcloud-${OS_INFO}"'
