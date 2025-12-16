@@ -46,7 +46,7 @@ Create projects in Harbor:
 ![alt text](./readme-files/harbor-projects.png)
 
 Run for example following command to test image pulling:
-`docker pull "$REGISTRY/proxy-registry.k8s.io/kube-proxy@sha256:db28d4b5194a086fc60084fb1e338cc324ae0a7f537a476534cc7819d670715c"`
+`docker pull "$CONTAINER_REGISTRY_URL/proxy-registry.k8s.io/kube-proxy@sha256:db28d4b5194a086fc60084fb1e338cc324ae0a7f537a476534cc7819d670715c"`
 
 Ref: <https://www.talos.dev/v1.9/talos-guides/configuration/pull-through-cache/#using-harbor-as-a-caching-registry>
 
@@ -109,6 +109,24 @@ docker run --rm \
       export PACKER_FLAGS="-var container_registry_url='"${CONTAINER_REGISTRY_URL}"'" && \
       echo "Validate..." && /usr/bin/make "validate-hcloud-${OS_INFO}" && \
       echo "Build..." && /usr/bin/make "build-hcloud-${OS_INFO}"'
+# This will run following command
+# /home/imagebuilder/.local/bin/packer build \
+#   -var-file="/home/imagebuilder/packer/config/kubernetes.json" \
+#   -var-file="/home/imagebuilder/packer/config/cni.json" \
+#   -var-file="/home/imagebuilder/packer/config/containerd.json" \
+#   -var-file="/home/imagebuilder/packer/config/wasm-shims.json" \
+#   -var-file="/home/imagebuilder/packer/config/ansible-args.json" \
+#   -var-file="/home/imagebuilder/packer/config/goss-args.json" \
+#   -var-file="/home/imagebuilder/packer/config/common.json" \
+#   -var-file="/home/imagebuilder/packer/config/additional_components.json" \
+#   -var-file="/home/imagebuilder/packer/config/ecr_credential_provider.json" \
+#   -var container_registry_url=https://harbor.devops1.pbm.sh \
+#   -color=true \
+#   -var-file="packer/hcloud/hcloud-config.json" \
+#   -var-file="/home/imagebuilder/packer/hcloud/ubuntu-2404.json" \
+#   -var-file="/tmp/k8s-1.31.json" \
+#   packer/hcloud/packer.json
+
 ```
 
 ## References
