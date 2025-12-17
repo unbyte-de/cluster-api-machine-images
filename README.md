@@ -1,3 +1,10 @@
+
+<p align="center">
+  <a href="https://unbyte.de">
+    <img src="https://www.unbyte.de/wp-content/uploads/2024/12/unbyte_logo.svg" alt="unbyte GmbH" width="300">
+  </a>
+</p>
+
 # Cluster API Machine Images
 
 This repository contains configuration to build custom Hetzner Cloud images using the [kubernetes-sigs/image-builder](https://github.com/kubernetes-sigs/image-builder).
