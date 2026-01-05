@@ -1,26 +1,27 @@
+---
 name: pre-commit
 
 on:
   pull_request:
   push:
     branches:
-      - main
+    - main
   workflow_dispatch:
 
 jobs:
   lint:
     runs-on: ubuntu-latest
     steps:
-      # https://github.com/actions/checkout
-      - name: Checkout
-        uses: actions/checkout@v6.0.1
+    # https://github.com/actions/checkout
+    - name: Checkout
+      uses: actions/checkout@v6.0.1
 
-      # https://github.com/actions/setup-python
-      - name: Set up python
-        uses: actions/setup-python@v6.1.0
-        with:
-          python-version: '3.13'
+    # https://github.com/actions/setup-python
+    - name: Set up python
+      uses: actions/setup-python@v6.1.0
+      with:
+        python-version: '3.13'
 
-      # https://github.com/pre-commit/action
-      - name: Run pre-commit
-        uses: pre-commit/action@v3.0.1
+    # https://github.com/pre-commit/action
+    - name: Run pre-commit
+      uses: pre-commit/action@v3.0.1
