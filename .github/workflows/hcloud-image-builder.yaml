@@ -1,3 +1,4 @@
+---
 name: Build hcloud node image
 
 on:
@@ -11,17 +12,17 @@ on:
         required: true
         type: choice
         options:
-          - unbyte-dev
-          - unbyte-mgt
-          - pbm-dev
-          - pbm-stage
-          - pbm-prod
+        - unbyte-dev
+        - unbyte-mgt
+        - pbm-dev
+        - pbm-stage
+        - pbm-prod
       OS:
         description: "OS"
         required: true
         type: choice
         options:
-          - ubuntu-2404
+        - ubuntu-2404
 
 jobs:
   build:
@@ -40,38 +41,38 @@ jobs:
       IMAGE_BUILDER: >-
         registry.k8s.io/scl-image-builder/cluster-node-image-builder-amd64:v0.1.48@sha256:4a522321b30c855efeeb6503f663046aca5c12f14edeb41ee7ef3ae617e3597a
     steps:
-      # https://github.com/actions/checkout
-      - name: Checkout
-        uses: actions/checkout@v6.0.1
+    # https://github.com/actions/checkout
+    - name: Checkout
+      uses: actions/checkout@v6.0.1
 
-      - name: Build
-        shell: bash
-        run: |
-          set -euo pipefail
+    - name: Build
+      shell: bash
+      run: |
+        set -euo pipefail
 
-          # sanity checks
-          test -f config/packer-patch.json
-          test -f config/vars/k8s-1.31.json
-          # scripts dir must exist and contain at least one file
-          test -d config/scripts
-          test -n "$(find config/scripts -maxdepth 1 -type f -print -quit)"
+        # sanity checks
+        test -f config/packer-patch.json
+        test -f config/vars/k8s-1.31.json
+        # scripts dir must exist and contain at least one file
+        test -d config/scripts
+        test -n "$(find config/scripts -maxdepth 1 -type f -print -quit)"
 
-          docker run --rm \
-            --env HCLOUD_LOCATION=${HCLOUD_LOCATION} \
-            --env HCLOUD_TOKEN=${HCLOUD_TOKEN} \
-            --env PACKER_VAR_FILES=${PACKER_VAR_FILES} \
-            --env OS_INFO=${OS_INFO} \
-            -v "${PWD}/config/scripts:/home/imagebuilder/packer/hcloud/scripts" \
-            -v "${PWD}/config/packer-patch.json:/tmp/packer-patch.json" \
-            -v "${PWD}/config/vars/k8s-1.31.json:${PACKER_VAR_FILES}" \
-            --entrypoint /bin/sh \
-            "${IMAGE_BUILDER}" \
-            -c 'set -e
-                echo "Patch..." &&
-                jq --slurpfile patch /tmp/packer-patch.json \
-                  ".provisioners += \$patch[0].provisioners" \
-                  packer/hcloud/packer.json > /tmp/packer.json && \
-                mv /tmp/packer.json packer/hcloud/packer.json && \
-                export PACKER_FLAGS="-var container_registry_url='"${CONTAINER_REGISTRY_URL}"'" && \
-                echo "Validate..." && /usr/bin/make "validate-hcloud-${OS_INFO}" && \
-                echo "Build..." && /usr/bin/make "build-hcloud-${OS_INFO}"'
+        docker run --rm \
+          --env HCLOUD_LOCATION=${HCLOUD_LOCATION} \
+          --env HCLOUD_TOKEN=${HCLOUD_TOKEN} \
+          --env PACKER_VAR_FILES=${PACKER_VAR_FILES} \
+          --env OS_INFO=${OS_INFO} \
+          -v "${PWD}/config/scripts:/home/imagebuilder/packer/hcloud/scripts" \
+          -v "${PWD}/config/packer-patch.json:/tmp/packer-patch.json" \
+          -v "${PWD}/config/vars/k8s-1.31.json:${PACKER_VAR_FILES}" \
+          --entrypoint /bin/sh \
+          "${IMAGE_BUILDER}" \
+          -c 'set -e
+              echo "Patch..." &&
+              jq --slurpfile patch /tmp/packer-patch.json \
+                ".provisioners += \$patch[0].provisioners" \
+                packer/hcloud/packer.json > /tmp/packer.json && \
+              mv /tmp/packer.json packer/hcloud/packer.json && \
+              export PACKER_FLAGS="-var container_registry_url='"${CONTAINER_REGISTRY_URL}"'" && \
+              echo "Validate..." && /usr/bin/make "validate-hcloud-${OS_INFO}" && \
+              echo "Build..." && /usr/bin/make "build-hcloud-${OS_INFO}"'
