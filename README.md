@@ -85,7 +85,7 @@ Variables:
 * `HCLOUD_TOKEN`: Generate an hcloud API token at `https://console.hetzner.com/projects/<your-project-id>/security/tokens`.
 * `HCLOUD_LOCATION`: This is the location where packer image builder server provisioned at.
 * `OS_INFO`: Operating system to install.
-  Possible OS are listed in [image-builder documentation](https://image-builder.sigs.k8s.io/capi/providers/hcloud#configuration).
+  Possible operating systems are listed in [image-builder documentation](https://image-builder.sigs.k8s.io/capi/providers/hcloud#configuration).
 * `PACKER_VAR_FILES`: Where to mount [custom packer var file](./config/vars/k8s-1.31.json).
 * `CONTAINER_REGISTRY_URL`: Harbor registry URL for container image proxy.
 
