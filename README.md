@@ -7,6 +7,15 @@
 
 # Cluster API Machine Images
 
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
+<!-- [![GitHub Actions](https://img.shields.io/github/actions/workflow/status/unbyte/cluster-api-machine-images/hcloud-image-builder.yaml?label=image%20builder)](https://github.com/unbyte-de/cluster-api-machine-images/actions/workflows/hcloud-image-builder.yaml) -->
+<!-- [![Pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit)](https://github.com/pre-commit/pre-commit) -->
+[![Packer](https://img.shields.io/badge/Packer-02A8EF?logo=packer&logoColor=white)](https://www.packer.io/)
+[![Hetzner Cloud](https://img.shields.io/badge/Hetzner%20Cloud-D50C2D?logo=hetzner&logoColor=white)](https://www.hetzner.com/cloud)
+<!-- [![Ubuntu](https://img.shields.io/badge/Ubuntu-24.04-E95420?logo=ubuntu&logoColor=white)](https://ubuntu.com/) -->
+<!-- [![Kubernetes](https://img.shields.io/badge/Kubernetes-1.31-326CE5?logo=kubernetes&logoColor=white)](https://kubernetes.io) -->
+<!-- [![Contributions Welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg)](CONTRIBUTING.md) -->
+
 This repository contains configuration to build custom Hetzner Cloud images using the [kubernetes-sigs/image-builder](https://github.com/kubernetes-sigs/image-builder).
 The primary goal is to create images compatible with Cluster API (CAPI) for node provisioning.
 
