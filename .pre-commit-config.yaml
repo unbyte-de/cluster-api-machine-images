@@ -1,7 +1,7 @@
 ---
 repos:
 - repo: https://github.com/editorconfig-checker/editorconfig-checker.python
-  rev: '3.6.0'
+  rev: "3.6.0"
   hooks:
   - id: editorconfig-checker
     args:
@@ -19,7 +19,7 @@ repos:
 #     - -c=./.yamllint
 # https://github.com/google/yamlfmt/blob/main/docs/pre-commit.md
 - repo: https://github.com/google/yamlfmt.git
-  rev: v0.20.0
+  rev: v0.21.0
   hooks:
   - id: yamlfmt
     # In pre-commit we run yamlfmt in "lint" mode.
