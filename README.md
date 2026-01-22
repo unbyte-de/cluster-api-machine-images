@@ -30,6 +30,8 @@ We defined a [packer-patch.json](./config/packer-patch.json) file,
 which we use to patch the original [packer.json](https://github.com/kubernetes-sigs/image-builder/blob/main/images/capi/packer/hcloud/packer.json) file,
 so that packer runs our scripts.
 
+We also had to define [hcloud-config.json](./config/hcloud-config.json) file to fix hcloud server type.
+
 ### Variables
 
 We define which versions of k8s, CNI and containerd to install in [config/vars/k8s-1.31.json](config/vars/k8s-1.31.json).
@@ -89,6 +91,7 @@ docker run --rm \
   --env PACKER_VAR_FILES=${PACKER_VAR_FILES} \
   --env OS_INFO=${OS_INFO} \
   -v "${PWD}/config/scripts:/home/imagebuilder/packer/hcloud/scripts" \
+  -v "${PWD}/config/hcloud-config.json:/home/imagebuilder/packer/hcloud/hcloud-config.json" \
   -v "${PWD}/config/packer-patch.json:/tmp/packer-patch.json" \
   -v "${PWD}/config/vars/k8s-1.31.json:${PACKER_VAR_FILES}" \
   --entrypoint /bin/sh \
