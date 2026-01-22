@@ -66,6 +66,7 @@ jobs:
           --env PACKER_VAR_FILES=${PACKER_VAR_FILES} \
           --env OS_INFO=${OS_INFO} \
           -v "${PWD}/config/scripts:/home/imagebuilder/packer/hcloud/scripts" \
+          -v "${PWD}/config/hcloud-config.json:/home/imagebuilder/packer/hcloud/hcloud-config.json" \
           -v "${PWD}/config/packer-patch.json:/tmp/packer-patch.json" \
           -v "${PWD}/config/vars/k8s-1.31.json:${PACKER_VAR_FILES}" \
           --entrypoint /bin/sh \
