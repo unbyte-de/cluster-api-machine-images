@@ -128,7 +128,7 @@ docker run --rm \
 ## References
 
 * <https://github.com/kubernetes-sigs/image-builder/tree/main/images/capi>
-  * <https://github.com/unbyte-de/image-builder/tree/main/images/capi/packer/config>
-  * <https://github.com/unbyte-de/image-builder/tree/main/images/capi/packer/hcloud>
+  * <https://github.com/kubernetes-sigs/image-builder/tree/main/images/capi/packer/config>
+  * <https://github.com/kubernetes-sigs/image-builder/tree/main/images/capi/packer/hcloud>
 * <https://image-builder.sigs.k8s.io/capi/providers/hcloud>
 * <https://image-builder.sigs.k8s.io/capi/capi#customization>
