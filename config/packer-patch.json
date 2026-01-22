@@ -4,7 +4,9 @@
       "type": "shell",
       "environment_vars": [
         "ARCH=amd64",
-        "CONTAINER_REGISTRY_URL={{user `container_registry_url`}}"
+        "CONTAINER_REGISTRY_URL={{user `container_registry_url`}}",
+        "CONTAINER_REGISTRY_USERNAME={{user `container_registry_username`}}",
+        "CONTAINER_REGISTRY_PASSWORD={{user `container_registry_password`}}"
       ],
       "scripts": [
         "./packer/hcloud/scripts/additional-tools.sh",

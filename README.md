@@ -7,9 +7,9 @@
 
 # Cluster API Machine Images
 
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 [![Packer](https://img.shields.io/badge/Packer-02A8EF?logo=packer&logoColor=white)](https://www.packer.io/)
 [![Hetzner Cloud](https://img.shields.io/badge/Hetzner%20Cloud-D50C2D?logo=hetzner&logoColor=white)](https://www.hetzner.com/cloud)
+<!-- [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE) -->
 <!-- [![GitHub Actions](https://img.shields.io/github/actions/workflow/status/unbyte/cluster-api-machine-images/hcloud-image-builder.yaml?label=image%20builder)](https://github.com/unbyte-de/cluster-api-machine-images/actions/workflows/hcloud-image-builder.yaml) -->
 <!-- [![Pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit)](https://github.com/pre-commit/pre-commit) -->
 <!-- [![Ubuntu](https://img.shields.io/badge/Ubuntu-24.04-E95420?logo=ubuntu&logoColor=white)](https://ubuntu.com/) -->
@@ -39,33 +39,6 @@ We define which versions of k8s, CNI and containerd to install in [config/vars/k
 We implement a script, which installs additional tools in machine images,
 in [config/scripts/additional-tools.sh](./config/scripts/additional-tools.sh).
 
-### Container Registry Mirrors
-
-We implement a script to define proxy registries for Harbor in [config/scripts/cri.sh](./config/scripts/cri.sh).
-
-#### How to configure proxy registries in Harbor?
-
-First create registries in Harbor:
-
-![alt text](./readme-files/harbor-registries.png)
-
-For GitLab registry, a repo-level access token
-(`HARBOR_TOKEN` created in `container-images` repo with `Developer` role and `read_registry` scope) should be created:
-
-![alt text](./readme-files/harbor-registry-gitlab-detail.png)
-
-Create projects in Harbor:
-
-* Select `Public`
-* Enable `Proxy Cache` and select corresponding registry
-
-![alt text](./readme-files/harbor-projects.png)
-
-Run for example following command to test image pulling:
-`docker pull "$CONTAINER_REGISTRY_URL/proxy-registry.k8s.io/kube-proxy@sha256:db28d4b5194a086fc60084fb1e338cc324ae0a7f537a476534cc7819d670715c"`
-
-Ref: <https://www.talos.dev/v1.9/talos-guides/configuration/pull-through-cache/#using-harbor-as-a-caching-registry>
-
 ## Image Generation
 
 ### Actions
@@ -80,7 +53,7 @@ When you have a new Hetzner project and want to generate an image for it, you ha
 
 1. Generate a API token for that project
 2. [Create a new environment](https://github.com/unbyte-de/cluster-api-machine-images/settings/environments/new) with the same name as the project
-3. Define environment secrets `HCLOUD_TOKEN` and `CONTAINER_REGISTRY_URL` in the new environment
+3. Define environment secrets `HCLOUD_TOKEN`, `CONTAINER_REGISTRY_URL`, `CONTAINER_REGISTRY_USERNAME` and `CONTAINER_REGISTRY_PASSWORD` in the new environment
 
 ### Local
 
@@ -97,13 +70,17 @@ Variables:
   Possible operating systems are listed in [image-builder documentation](https://image-builder.sigs.k8s.io/capi/providers/hcloud#configuration).
 * `PACKER_VAR_FILES`: Where to mount [custom packer var file](./config/vars/k8s-1.31.json).
 * `CONTAINER_REGISTRY_URL`: Harbor registry URL for container image proxy.
+* `CONTAINER_REGISTRY_USERNAME`
+* `CONTAINER_REGISTRY_PASSWORD`
 
 ```sh
 export HCLOUD_TOKEN="generate-it"
 export HCLOUD_LOCATION=fsn1
 export OS_INFO="ubuntu-2404"
 export PACKER_VAR_FILES=/tmp/k8s-1.31.json
-export CONTAINER_REGISTRY_URL="https://harbor.devops1.pbm.sh"
+export CONTAINER_REGISTRY_URL="https://registry.mgt.unbyte.de"
+export CONTAINER_REGISTRY_USERNAME="get-username"
+export CONTAINER_REGISTRY_PASSWORD="get-password"
 export IMAGE_BUILDER=registry.k8s.io/scl-image-builder/cluster-node-image-builder-amd64:v0.1.48@sha256:4a522321b30c855efeeb6503f663046aca5c12f14edeb41ee7ef3ae617e3597a
 
 docker run --rm \
@@ -122,7 +99,7 @@ docker run --rm \
         ".provisioners += \$patch[0].provisioners" \
         packer/hcloud/packer.json > /tmp/packer.json && \
       mv /tmp/packer.json packer/hcloud/packer.json && \
-      export PACKER_FLAGS="-var container_registry_url='"${CONTAINER_REGISTRY_URL}"'" && \
+      export PACKER_FLAGS="-var container_registry_url='"${CONTAINER_REGISTRY_URL}"' -var container_registry_username='"${CONTAINER_REGISTRY_USERNAME}"' -var container_registry_password='"${CONTAINER_REGISTRY_PASSWORD}"'" && \
       echo "Validate..." && /usr/bin/make "validate-hcloud-${OS_INFO}" && \
       echo "Build..." && /usr/bin/make "build-hcloud-${OS_INFO}"'
 # This will run following command

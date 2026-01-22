@@ -35,6 +35,8 @@ jobs:
       # Comes from the selected Environment's secrets
       HCLOUD_TOKEN: ${{ secrets.HCLOUD_TOKEN }}
       CONTAINER_REGISTRY_URL: ${{ secrets.CONTAINER_REGISTRY_URL }}
+      CONTAINER_REGISTRY_USERNAME: ${{ secrets.CONTAINER_REGISTRY_USERNAME }}
+      CONTAINER_REGISTRY_PASSWORD: ${{ secrets.CONTAINER_REGISTRY_PASSWORD }}
       OS_INFO: ${{ inputs.OS }}
       PACKER_VAR_FILES: /tmp/k8s-1.31.json
       # https://github.com/kubernetes-sigs/image-builder/releases/tag/v0.1.48
