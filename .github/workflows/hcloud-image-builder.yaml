@@ -77,6 +77,6 @@ jobs:
                 ".provisioners += \$patch[0].provisioners" \
                 packer/hcloud/packer.json > /tmp/packer.json && \
               mv /tmp/packer.json packer/hcloud/packer.json && \
-              export PACKER_FLAGS="-var container_registry_url='"${CONTAINER_REGISTRY_URL}"'" && \
+              export PACKER_FLAGS="-var container_registry_url='"${CONTAINER_REGISTRY_URL}"' -var container_registry_username='"${CONTAINER_REGISTRY_USERNAME}"' -var container_registry_password='"${CONTAINER_REGISTRY_PASSWORD}"'" && \
               echo "Validate..." && /usr/bin/make "validate-hcloud-${OS_INFO}" && \
               echo "Build..." && /usr/bin/make "build-hcloud-${OS_INFO}"'
