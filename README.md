@@ -116,7 +116,7 @@ docker run --rm \
 #   -var-file="/home/imagebuilder/packer/config/common.json" \
 #   -var-file="/home/imagebuilder/packer/config/additional_components.json" \
 #   -var-file="/home/imagebuilder/packer/config/ecr_credential_provider.json" \
-#   -var container_registry_url=https://harbor.devops1.pbm.sh \
+#   -var container_registry_url=https://registry.mgt.unbyte.de \
 #   -color=true \
 #   -var-file="packer/hcloud/hcloud-config.json" \
 #   -var-file="/home/imagebuilder/packer/hcloud/ubuntu-2404.json" \
