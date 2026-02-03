@@ -132,3 +132,14 @@ docker run --rm \
   * <https://github.com/kubernetes-sigs/image-builder/tree/main/images/capi/packer/hcloud>
 * <https://image-builder.sigs.k8s.io/capi/providers/hcloud>
 * <https://image-builder.sigs.k8s.io/capi/capi#customization>
+
+
+## Local Developmemt
+
+To run yamlfmt locally:
+
+```sh
+yamlfmt .
+# Or remove -quiet and/or -lint flag of yamlfmt in .pre-commit-config.yaml and run
+pre-commit run --all-files
+```

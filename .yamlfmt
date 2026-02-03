@@ -20,8 +20,9 @@ formatter:
   # array_indent: 2  # same as indent by default
   # https://github.com/google/yamlfmt/blob/main/docs/config-file.md#max_line_length
   # max_line_length: 160  # disabled by default
-  pad_line_comments: 2
+  pad_line_comments: 1
   force_array_style: block
   force_quote_style: double
   retain_line_breaks: false
   retain_line_breaks_single: true
+  scan_folded_as_literal: true
