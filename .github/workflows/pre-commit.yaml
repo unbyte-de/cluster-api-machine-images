@@ -20,7 +20,7 @@ jobs:
     - name: Set up python
       uses: actions/setup-python@v6.1.0
       with:
-        python-version: "3.13"
+        python-version: "3.14"
 
     # https://github.com/pre-commit/action
     - name: Run pre-commit
