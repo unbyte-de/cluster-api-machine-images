@@ -32,7 +32,7 @@ jobs:
     environment: ${{ inputs.HCLOUD_PROJECT }}
     # environment: ${{ github.event_name == 'workflow_dispatch' && inputs.HCLOUD_PROJECT || 'unbyte-dev' }}
     env:
-      HCLOUD_LOCATION: fsn1
+      HCLOUD_LOCATION: nbg1
       # Comes from the selected Environment's secrets
       HCLOUD_TOKEN: ${{ secrets.HCLOUD_TOKEN }}
       CONTAINER_REGISTRY_URL: ${{ secrets.CONTAINER_REGISTRY_URL }}
