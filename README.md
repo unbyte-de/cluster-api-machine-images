@@ -34,7 +34,7 @@ We also had to define [hcloud-config.json](./config/hcloud-config.json) file to 
 
 ### Variables
 
-We define which versions of k8s, CNI and containerd to install in [config/vars/k8s-1.31.json](config/vars/k8s-1.31.json).
+We define which versions of k8s, [CNI plugins](https://github.com/containernetworking/plugins/releases) and containerd to install in [config/vars/](config/vars/).
 
 ### Additional Tools
 
