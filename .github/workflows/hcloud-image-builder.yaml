@@ -26,6 +26,7 @@ on:
         - ubuntu-2404
 
 jobs:
+  # TODO extend for new k8s versions
   build:
     name: Build image (${{ inputs.HCLOUD_PROJECT }})
     runs-on: ubuntu-latest
