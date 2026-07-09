@@ -1,0 +1,9 @@
+{
+  "kubernetes_rpm_version": "1.33.13",
+  "kubernetes_semver": "v1.33.13",
+  "kubernetes_series": "v1.33",
+  "kubernetes_deb_version": "1.33.13-1.1",
+  "kubernetes_cni_semver": "v1.9.0",
+  "crictl_version": "1.33.0",
+  "containerd_version": "2.2.0"
+}
